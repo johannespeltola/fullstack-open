@@ -1,7 +1,25 @@
 import { useEffect } from "react"
 import { useState } from "react"
+import weatherService from '../services/weather'
+
+const kelvin = 274.15
 
 const CountryDetails = ({ country }) => {
+  const [weather, setWeather] = useState(null)
+
+  const featchWeather = async () => {
+    try {
+      setWeather(await weatherService.current(country))
+    } catch (error) {
+      console.error('Failed to fetch weather')
+    }
+  }
+
+  useEffect(() => {
+    if (!country) return;
+    featchWeather()
+  }, [country])
+
   return (
     <div>
       <h1>{country.name.common}</h1>
@@ -12,6 +30,14 @@ const CountryDetails = ({ country }) => {
         {Object.values(country.languages).map((e) => <li key={e}>{e}</li>)}
       </ul>
       <img src={country.flags.png} alt='flag' />
+      {weather && (
+        <div>
+          <h2>Weather in {country.capital[0]}</h2>
+          <p>temperature {(weather.main.temp - kelvin).toFixed(2)} Celcius</p>
+          <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} />
+          <p>wind {weather.wind.speed} m/s</p>
+        </div>
+      )}
     </div>
   )
 }
