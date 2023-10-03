@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import Search from './components/Search'
 import Phonebook from './components/Phonebook'
 import ContactForm from './components/ContactForm'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -17,27 +17,59 @@ const App = () => {
     setNewNumber('')
   }
 
-  const onSubmit = (e) => {
-    e.preventDefault()
-    if (persons.some((p) => p.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
+  const createPerson = async (person) => {
+    try {
+      const inserted = await personService.create(person)
+      setPersons([...persons, inserted])
+    } catch (error) {
+      console.error('Failed to create person', error.toString())
     }
-    setPersons([...persons, { name: newName, number: newNumber }])
-    clearInput()
   }
 
-  const fetchContacts = async () => {
+  const fetchPersons = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/persons')
-      setPersons(res.data)
+      setPersons(await personService.getAll())
     } catch (error) {
       console.error('Failed to fetch persons', error.toString())
     }
   }
 
+  const updatePerson = async (person) => {
+    try {
+      const updated = await personService.update(person.id, person)
+      setPersons(persons.map((e) => e.id !== person.id ? e : updated))
+    } catch (error) {
+      console.error('Failed to update person', error.toString())
+    }
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    const existing = persons.find((p) => p.name === newName)
+    if (existing) {
+      if (!window.confirm(`${existing.name} is already added to phonebook, replace the old number with a new one?`)) return
+      updatePerson({ ...existing, number: newNumber })
+    } else {
+      const id = persons.at(-1).id + 1
+      const newPerson = { id, name: newName, number: newNumber }
+      createPerson(newPerson)
+      clearInput()
+    }
+  }
+
+  const onDelete = async (person) => {
+    try {
+      if (window.confirm(`Delete ${person.name} ?`)) {
+        await personService.destroy(person.id);
+        setPersons(persons.filter((e) => e.id !== person.id))
+      }
+    } catch (error) {
+      console.error('Failed to delete person', error.toString())
+    }
+  }
+
   useEffect(() => {
-    fetchContacts();
+    fetchPersons();
   }, [])
 
   return (
@@ -53,7 +85,7 @@ const App = () => {
         onNumberChange={(e) => setNewNumber(e.target.value)}
       />
       <h2>Numbers</h2>
-      <Phonebook persons={persons} filter={filter} />
+      <Phonebook persons={persons} filter={filter} onDelete={onDelete} />
     </div>
   )
 }
