@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import Search from './components/Search'
 import Phonebook from './components/Phonebook'
 import ContactForm from './components/ContactForm'
@@ -25,6 +26,19 @@ const App = () => {
     setPersons([...persons, { name: newName, number: newNumber }])
     clearInput()
   }
+
+  const fetchContacts = async () => {
+    try {
+      const res = await axios.get('http://localhost:3001/persons')
+      setPersons(res.data)
+    } catch (error) {
+      console.error('Failed to fetch persons', error.toString())
+    }
+  }
+
+  useEffect(() => {
+    fetchContacts();
+  }, [])
 
   return (
     <div>
