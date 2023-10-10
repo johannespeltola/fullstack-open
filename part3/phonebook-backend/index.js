@@ -62,20 +62,30 @@ app.get('/api/persons', async (req, res, next) => {
 
 app.get('/api/persons/:id', async (req, res, next) => {
   try {
-    const person = await Person.findById(req.params.id)
-    console.log(person)
+    const person = await Person
+      .findById(req.params.id)
+      .catch((e) => {
+        throw new AppError(400, 'malformatted id')
+      })
+    if (!person) return res.sendStatus(404)
     res.json(person)
   } catch (error) {
     next(error)
   }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const personId = Number(req.params.id)
-  const person = persons.find((e) => e.id === personId)
-  if (!person) return res.sendStatus(404)
-  persons = persons.filter((e) => e.id !== personId)
-  res.sendStatus(200)
+app.delete('/api/persons/:id', async (req, res, next) => {
+  try {
+    const found = await Person
+      .findByIdAndDelete(req.params.id)
+      .catch((e) => {
+        throw new AppError(400, 'malformatted id')
+      })
+    if (!found) return res.sendStatus(404)
+    res.sendStatus(204)
+  } catch (error) {
+    next(error)
+  }
 })
 
 app.post('/api/persons', async (req, res, next) => {
