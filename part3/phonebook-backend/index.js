@@ -1,10 +1,12 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const { getRandomInt } = require('./utils')
 const AppError = require('./error')
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(morgan((tokens, req, res) => [
   tokens.method(req, res),
