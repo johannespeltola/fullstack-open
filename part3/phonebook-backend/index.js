@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
 const { getRandomInt } = require('./utils')
 const AppError = require('./error')
+const personSchema = require('./models/person')
 
 const app = express()
 
@@ -51,14 +53,22 @@ app.get('/info', (req, res) => {
   `)
 })
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
+app.get('/api/persons', async (req, res, next) => {
+  try {
+    res.json(await personSchema.find())
+  } catch (error) {
+    next(error)
+  }
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const person = persons.find((e) => e.id === Number(req.params.id))
-  if (!person) return res.sendStatus(404)
-  res.json(person)
+app.get('/api/persons/:id', async (req, res, next) => {
+  try {
+    const person = await personSchema.findById(req.params.id)
+    console.log(person)
+    res.json(person)
+  } catch (error) {
+    next(error)
+  }
 })
 
 app.delete('/api/persons/:id', (req, res) => {
