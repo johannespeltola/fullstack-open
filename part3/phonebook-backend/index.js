@@ -75,7 +75,9 @@ app.post('/api/persons', async (req, res, next) => {
     const { name, number } = req.body;
     if (!name) throw new AppError(400, 'Missing required value name')
     if (!number) throw new AppError(400, 'Missing required value number')
-    // if (persons.find((e) => e.name === name)) throw new AppError(409, `Name ${name} already exists`)
+
+    const person = await Person.find({ name })
+    if (person.length) throw new AppError(409, `Name ${name} already exists`)
 
     const newPerson = new Person({
       name,
@@ -83,6 +85,20 @@ app.post('/api/persons', async (req, res, next) => {
     })
     await newPerson.save()
     res.status(201).json(newPerson)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.put('/api/persons/:id', async (req, res, next) => {
+  try {
+    const { name, number } = req.body
+    const found = await Person.findByIdAndUpdate(req.params.id, {
+      name,
+      number
+    }, { new: true })
+    if (!found) res.sendStatus(404)
+    res.json(found)
   } catch (error) {
     next(error)
   }
