@@ -26,16 +26,24 @@ const persons = [
   }
 ]
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
-})
-
 app.get('/info', (req, res) => {
   res.setHeader('Content-Type', 'text/html')
   res.send(`
   <p>Phonebook has info for ${persons.length} people</p>
   <p>${new Date()}</p>
   `)
+})
+
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
+})
+
+app.get('/api/persons/:id', (req, res) => {
+  const person = persons.find((e) => e.id === Number(req.params.id))
+  if (person) {
+    return res.json(person)
+  }
+  res.sendStatus(404)
 })
 
 const PORT = 3001
