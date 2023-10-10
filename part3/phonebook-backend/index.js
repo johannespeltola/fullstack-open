@@ -106,7 +106,7 @@ app.post('/api/persons', async (req, res, next) => {
   }
 })
 
-// Error handler
+// Error handler with support for status based errors
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err)
