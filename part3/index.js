@@ -1,5 +1,6 @@
 const express = require('express')
 const { getRandomInt } = require('./utils')
+const AppError = require('./error')
 
 const app = express()
 app.use(express.json())
@@ -53,16 +54,32 @@ app.delete('/api/persons/:id', (req, res) => {
   res.sendStatus(200)
 })
 
-app.post('/api/persons', (req, res) => {
-  const { name, number } = req.body;
-  const id = getRandomInt(persons.length, Number.MAX_SAFE_INTEGER - 1)
-  const newPerson = {
-    id,
-    name,
-    number
+app.post('/api/persons', (req, res, next) => {
+  try {
+    const { name, number } = req.body;
+    if (!name) throw new AppError(400, 'Missing required value name')
+    if (!number) throw new AppError(400, 'Missing required value number')
+    if (persons.find((e) => e.name === name)) throw new AppError(409, `Name ${name} already exists`)
+    const id = getRandomInt(persons.length, Number.MAX_SAFE_INTEGER / 2)
+    const newPerson = {
+      id,
+      name,
+      number
+    }
+    persons.push(newPerson)
+    res.status(201).json(newPerson)
+  } catch (error) {
+    next(error)
   }
-  persons.push(newPerson)
-  res.status(201).json(newPerson)
+})
+
+// Error handler
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err)
+  }
+  res.status(err.status || 500)
+  res.json({ error: err.message })
 })
 
 const PORT = 3001
