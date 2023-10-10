@@ -3,9 +3,8 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
-const { getRandomInt } = require('./utils')
 const AppError = require('./error')
-const personSchema = require('./models/person')
+const Person = require('./models/person')
 
 const app = express()
 
@@ -55,7 +54,7 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons', async (req, res, next) => {
   try {
-    res.json(await personSchema.find())
+    res.json(await Person.find())
   } catch (error) {
     next(error)
   }
@@ -63,7 +62,7 @@ app.get('/api/persons', async (req, res, next) => {
 
 app.get('/api/persons/:id', async (req, res, next) => {
   try {
-    const person = await personSchema.findById(req.params.id)
+    const person = await Person.findById(req.params.id)
     console.log(person)
     res.json(person)
   } catch (error) {
@@ -79,19 +78,18 @@ app.delete('/api/persons/:id', (req, res) => {
   res.sendStatus(200)
 })
 
-app.post('/api/persons', (req, res, next) => {
+app.post('/api/persons', async (req, res, next) => {
   try {
     const { name, number } = req.body;
     if (!name) throw new AppError(400, 'Missing required value name')
     if (!number) throw new AppError(400, 'Missing required value number')
-    if (persons.find((e) => e.name === name)) throw new AppError(409, `Name ${name} already exists`)
-    const id = getRandomInt(persons.length, Number.MAX_SAFE_INTEGER / 2)
-    const newPerson = {
-      id,
+    // if (persons.find((e) => e.name === name)) throw new AppError(409, `Name ${name} already exists`)
+
+    const newPerson = new Person({
       name,
       number
-    }
-    persons.push(newPerson)
+    })
+    await newPerson.save()
     res.status(201).json(newPerson)
   } catch (error) {
     next(error)
