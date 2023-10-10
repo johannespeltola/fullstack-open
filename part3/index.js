@@ -1,4 +1,5 @@
 const express = require('express')
+const { getRandomInt } = require('./utils')
 
 const app = express()
 app.use(express.json())
@@ -50,6 +51,18 @@ app.delete('/api/persons/:id', (req, res) => {
   if (!person) return res.sendStatus(404)
   persons = persons.filter((e) => e.id !== personId)
   res.sendStatus(200)
+})
+
+app.post('/api/persons', (req, res) => {
+  const { name, number } = req.body;
+  const id = getRandomInt(persons.length, Number.MAX_SAFE_INTEGER - 1)
+  const newPerson = {
+    id,
+    name,
+    number
+  }
+  persons.push(newPerson)
+  res.json(newPerson)
 })
 
 const PORT = 3001
