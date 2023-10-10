@@ -46,7 +46,7 @@ app.get('/api/persons/:id', async (req, res, next) => {
   try {
     const person = await Person
       .findById(req.params.id)
-      .catch((e) => {
+      .catch(() => {
         throw new AppError(400, 'malformatted id')
       })
     if (!person) return res.sendStatus(404)
@@ -60,7 +60,7 @@ app.delete('/api/persons/:id', async (req, res, next) => {
   try {
     const found = await Person
       .findByIdAndDelete(req.params.id)
-      .catch((e) => {
+      .catch(() => {
         throw new AppError(400, 'malformatted id')
       })
     if (!found) return res.sendStatus(404)
@@ -72,7 +72,7 @@ app.delete('/api/persons/:id', async (req, res, next) => {
 
 app.post('/api/persons', async (req, res, next) => {
   try {
-    const { name, number } = req.body;
+    const { name, number } = req.body
     if (!name) throw new AppError(400, 'Missing required value name')
     if (!number) throw new AppError(400, 'Missing required value number')
 

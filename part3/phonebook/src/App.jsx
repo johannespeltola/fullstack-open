@@ -34,7 +34,7 @@ const App = () => {
       setPersons([...persons, inserted])
       showNotification('success', `Added ${inserted.name}`)
     } catch (error) {
-      showNotification('error', `Failed to add ${person.name}`)
+      showNotification('error', error.response.data.error)
     }
   }
 
@@ -52,7 +52,7 @@ const App = () => {
       setPersons(persons.map((e) => e.id !== person.id ? e : updated))
       showNotification('success', `Updated ${updated.name}`)
     } catch (error) {
-      showNotification('error', `Information of ${person.name} has already been removed from server`)
+      showNotification('error', error.response.data.error)
     }
   }
 
