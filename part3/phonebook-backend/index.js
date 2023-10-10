@@ -6,6 +6,7 @@ const { getRandomInt } = require('./utils')
 const AppError = require('./error')
 
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 app.use(morgan((tokens, req, res) => [
@@ -17,6 +18,7 @@ app.use(morgan((tokens, req, res) => [
   req.method === 'POST' ? JSON.stringify(req.body) : ''
 ].join(' ')
 ))
+app.use(express.static('dist'))
 
 let persons = [
   {
