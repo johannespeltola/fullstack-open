@@ -62,7 +62,7 @@ app.post('/api/persons', (req, res) => {
     number
   }
   persons.push(newPerson)
-  res.json(newPerson)
+  res.status(201).json(newPerson)
 })
 
 const PORT = 3001
