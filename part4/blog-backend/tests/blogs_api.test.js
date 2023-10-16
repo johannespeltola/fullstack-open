@@ -33,10 +33,10 @@ test('blog is successfully created', async () => {
     author: 'John Doe',
     url: 'google.com'
   }
-  const blogsBefore = await blogsInDb(newBlog)
+  const blogsBefore = await blogsInDb()
   const res = await api.post('/api/blogs').send(newBlog)
   expect(res.status).toBe(201)
-  const blogsAfter = await blogsInDb(newBlog)
+  const blogsAfter = await blogsInDb()
   expect(blogsAfter).toHaveLength(blogsBefore.length + 1)
   const blogIds = blogsAfter.map((e) => e.id)
   expect(blogIds).toContain(res.body.id)
@@ -84,6 +84,24 @@ test('new blog requires properties title and url', async () => {
   await api.post('/api/blogs').send(newBlogWithoutUrl).expect(400)
   await api.post('/api/blogs').send(newBlogWithoutBoth).expect(400)
   await api.post('/api/blogs').send(newBlogWithBoth).expect(201)
+})
+
+describe('deletion of a blog', () => {
+  const toBeDeleted = listWithManyBlogs[0]
+  test('should delete existing blog', async () => {
+    const blogsBefore = await blogsInDb()
+    await api.delete(`/api/blogs/${toBeDeleted._id}`).expect(204)
+    const blogsAfter = await blogsInDb()
+    expect(blogsAfter).toHaveLength(blogsBefore.length - 1)
+    const blogIds = blogsAfter.map((e) => e.id)
+    expect(blogIds).not.toContain(toBeDeleted._id)
+  })
+  test('should return 400 for malformatted id', async () => {
+    await api.delete(`/api/blogs/${toBeDeleted._id}123`).expect(400)
+  })
+  test('should return 404 if blog not found', async () => {
+    await api.delete(`/api/blogs/00${toBeDeleted._id.substring(2)}`)
+  })
 })
 
 afterAll(async () => {
