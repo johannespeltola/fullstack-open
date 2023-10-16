@@ -12,8 +12,24 @@ const favoriteBlog = (blogs) => {
   return favorite
 }
 
+const mostBlogs = (blogs) => {
+  if (!blogs.length) return null
+  // Sort list by author
+  const sorted = blogs.sort((a, b) =>
+    blogs.filter(e => e.author === a.author).length
+    - blogs.filter(e => e.author === b.author).length
+  )
+  // Max element at end of list
+  const max = sorted.at(-1)
+  return {
+    author: max.author,
+    blogs: sorted.filter(e => e.author === max.author).length
+  }
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
