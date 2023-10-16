@@ -63,6 +63,29 @@ test('blog has default value 0 for likes', async () => {
   expect(withLikes.body.likes).toBe(10)
 })
 
+test('new blog requires properties title and url', async () => {
+  const newBlogWithoutTitle = {
+    author: 'John Doe',
+    url: 'google.com'
+  }
+  const newBlogWithoutUrl = {
+    title: 'Interesting Blog Title',
+    author: 'John Doe'
+  }
+  const newBlogWithoutBoth = {
+    author: 'John Doe'
+  }
+  const newBlogWithBoth = {
+    title: 'Interesting Blog Title',
+    author: 'John Doe',
+    url: 'google.com'
+  }
+  await api.post('/api/blogs').send(newBlogWithoutTitle).expect(400)
+  await api.post('/api/blogs').send(newBlogWithoutUrl).expect(400)
+  await api.post('/api/blogs').send(newBlogWithoutBoth).expect(400)
+  await api.post('/api/blogs').send(newBlogWithBoth).expect(201)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

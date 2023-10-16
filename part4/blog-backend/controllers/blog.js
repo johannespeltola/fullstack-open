@@ -12,7 +12,14 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const newPerson = new Blog(req.body)
+    const { title, author, url, likes } = req.body
+    if (!title || !url) return res.sendStatus(400)
+    const newPerson = new Blog({
+      title,
+      author,
+      url,
+      likes
+    })
     await newPerson.save()
     res.status(201).json(newPerson)
   } catch (error) {
