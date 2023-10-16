@@ -37,4 +37,20 @@ router.delete('/:id', async (req, res, next) => {
   }
 })
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { title, author, url, likes } = req.body
+    const found = await Blog.findByIdAndUpdate(req.params.id, {
+      title,
+      author,
+      url,
+      likes
+    }, { new: true, runValidators: true, context: 'query' })
+    if (!found) res.sendStatus(404)
+    res.json(found)
+  } catch (error) {
+    next(error)
+  }
+})
+
 module.exports = router

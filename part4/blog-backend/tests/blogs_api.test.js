@@ -104,6 +104,20 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('updating of a blog', () => {
+  const toBeUpdated = listWithManyBlogs[0]
+  test('should delete existing blog', async () => {
+    const res = await api.put(`/api/blogs/${toBeUpdated._id}`).send({ likes: 12 }).expect(200)
+    expect(res.body.likes).toBe(12)
+  })
+  test('should return 400 for malformatted id', async () => {
+    await api.delete(`/api/blogs/${toBeUpdated._id}123`).expect(400)
+  })
+  test('should return 404 if blog not found', async () => {
+    await api.delete(`/api/blogs/00${toBeUpdated._id.substring(2)}`)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
