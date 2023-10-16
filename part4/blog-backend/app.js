@@ -17,6 +17,7 @@ mongoose.set('strictQuery', false)
 mongoose.connect(MONGODB_URI)
   .then(() => logger.info('connected to MongoDB'))
   .catch((error) => logger.info('error connecting to MongoDB:', error.message))
+mongoose.set('bufferTimeoutMS', 30000)
 
 app.use(cors())
 app.use(express.json())
