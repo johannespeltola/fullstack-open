@@ -8,7 +8,7 @@ const totalLikes = (blogs) => {
 }
 
 const favoriteBlog = (blogs) => {
-  const favorite = blogs.reduce((prev, current) => (prev?.likes > current.likes) ? prev : current, null)
+  const favorite = blogs.reduce((prev, curr) => (prev?.likes > curr.likes) ? prev : curr, null)
   return favorite
 }
 
@@ -27,9 +27,24 @@ const mostBlogs = (blogs) => {
   }
 }
 
+const mostLikes = (blogs) => {
+  if (!blogs.length) return null
+  // Count total likes for each author
+  const authors = Array.from(
+    new Set(blogs.map((e) => e.author))
+  ).map((e) => ({
+    author: e,
+    likes: blogs.filter((i) => i.author === e)
+      .reduce((prev, curr) => prev + curr.likes, 0)
+  }))
+  // Return author with most likes
+  return authors.reduce((prev, curr) => (prev?.likes > curr.likes) ? prev : curr, null)
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
