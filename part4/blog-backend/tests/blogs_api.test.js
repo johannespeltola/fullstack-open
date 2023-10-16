@@ -42,6 +42,27 @@ test('blog is successfully created', async () => {
   expect(blogIds).toContain(res.body.id)
 })
 
+test('blog has default value 0 for likes', async () => {
+  const newBlogWithoutLikes = {
+    title: 'Interesting Blog Title',
+    author: 'John Doe',
+    url: 'google.com'
+  }
+  const newBlogWithLikes = {
+    title: 'Another Interesting Blog Title part 2',
+    author: 'John Doe',
+    url: 'bing.com',
+    likes: 10
+  }
+  const withoutLikes = await api.post('/api/blogs').send(newBlogWithoutLikes)
+  expect(withoutLikes.status).toBe(201)
+  expect(withoutLikes.body.likes).toBe(0)
+
+  const withLikes = await api.post('/api/blogs').send(newBlogWithLikes)
+  expect(withLikes.status).toBe(201)
+  expect(withLikes.body.likes).toBe(10)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
