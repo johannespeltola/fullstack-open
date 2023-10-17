@@ -1,3 +1,9 @@
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('./config')
+const AppError = require('../utils/error')
+
+const User = require('../models/user')
+
 /* eslint-disable indent */
 // Error handler with support for status based errors
 const errorHandler = ((err, _req, res, next) => {
@@ -19,4 +25,27 @@ const errorHandler = ((err, _req, res, next) => {
   res.status(err.status || 500).json({ error: err.message })
 })
 
-module.exports = { errorHandler }
+const getTokenFrom = (req) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
+// Validate JWT from request and add authenticated user to request context
+const authHandler = async (req, res, next) => {
+  try {
+    const decodedToken = jwt.verify(getTokenFrom(req), JWT_SECRET)
+    if (!decodedToken.id) {
+      throw new AppError(401, 'Token invalid')
+    }
+    const user = await User.findById(decodedToken.id)
+    req.user = user.toJSON()
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
+module.exports = { errorHandler, authHandler }

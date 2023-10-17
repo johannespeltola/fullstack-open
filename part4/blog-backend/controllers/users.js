@@ -29,7 +29,7 @@ router.post('/', async (req, res, next) => {
     const user = new User({
       username,
       name,
-      passwordHash,
+      password: passwordHash,
     })
 
     const savedUser = await user.save()
