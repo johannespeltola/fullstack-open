@@ -11,6 +11,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
@@ -20,6 +24,7 @@ const App = () => {
     try {
       const user = await loginService.login(username, password)
       setUser(user)
+      localStorage.setItem('user', JSON.stringify(user))
       return true
     } catch (error) {
       setErrorMessage('Wrong credentials')
@@ -28,13 +33,18 @@ const App = () => {
     return false
   }
 
+  const handleLogout = async () => {
+    setUser(null)
+    localStorage.removeItem('user')
+  }
+
   return (
     <div>
       <Notification message={errorMessage} />
       {user ? (
         <>
           <h2>blogs</h2>
-          <p>{user.name} logged in</p>
+          <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
