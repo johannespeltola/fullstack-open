@@ -25,18 +25,23 @@ const errorHandler = ((err, _req, res, next) => {
   res.status(err.status || 500).json({ error: err.message })
 })
 
-const getTokenFrom = (req) => {
-  const authorization = req.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
+// Extract authentication token and save to request context
+const tokenExtractor = (req, res, next) => {
+  try {
+    const authorization = req.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+      req.token = authorization.replace('Bearer ', '')
+    }
+    next()
+  } catch (error) {
+    next(error)
   }
-  return null
 }
 
 // Validate JWT from request and add authenticated user to request context
 const authHandler = async (req, res, next) => {
   try {
-    const decodedToken = jwt.verify(getTokenFrom(req), JWT_SECRET)
+    const decodedToken = jwt.verify(req.token, JWT_SECRET)
     if (!decodedToken.id) {
       throw new AppError(401, 'Token invalid')
     }
@@ -48,4 +53,8 @@ const authHandler = async (req, res, next) => {
   }
 }
 
-module.exports = { errorHandler, authHandler }
+module.exports = {
+  errorHandler,
+  authHandler,
+  tokenExtractor
+}

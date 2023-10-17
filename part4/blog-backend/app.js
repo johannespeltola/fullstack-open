@@ -4,7 +4,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 
 const { MONGODB_URI } = require('./utils/config')
-const { errorHandler } = require('./utils/middleware')
+const { errorHandler, tokenExtractor } = require('./utils/middleware')
 const logger = require('./utils/logger')
 
 const blogRouter = require('./controllers/blog')
@@ -38,6 +38,8 @@ app.use(morgan((tokens, req, res) => [
 ))
 
 app.use(express.static('dist'))
+
+app.use(tokenExtractor)
 
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', usersRouter)
