@@ -2,6 +2,7 @@ const router = require('express').Router()
 
 const Blog = require('../models/blog')
 const { authHandler } = require('../utils/middleware')
+const AppError = require('../utils/error')
 
 router.get('/', async (req, res, next) => {
   try {
@@ -33,10 +34,14 @@ router.post('/', authHandler, async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', authHandler, async (req, res, next) => {
   try {
-    const found = await Blog.findByIdAndDelete(req.params.id)
-    if (!found) return res.sendStatus(404)
+    const blog = await Blog.findById(req.params.id)
+    if (!blog) throw new AppError(404, 'Blog not found')
+    if (blog.user.toString() !== req.user._id.toString()) {
+      throw new AppError(403, 'Blog does not belong to user')
+    }
+    await Blog.findByIdAndDelete(req.params.id)
     res.sendStatus(204)
   } catch (error) {
     next(error)

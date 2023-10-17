@@ -120,33 +120,52 @@ test('new blog requires properties title and url', async () => {
 
 describe('deletion of a blog', () => {
   const toBeDeleted = listWithManyBlogs[0]
-  test('should delete existing blog', async () => {
+  const token = generateAuthTokenForUser(userData)
+  test('should delete existing blog of correct user', async () => {
     const blogsBefore = await blogsInDb()
-    await api.delete(`/api/blogs/${toBeDeleted._id}`).expect(204)
+    await api.delete(`/api/blogs/${toBeDeleted._id}`).set('authorization', `Bearer ${token}`).expect(204)
     const blogsAfter = await blogsInDb()
     expect(blogsAfter).toHaveLength(blogsBefore.length - 1)
     const blogIds = blogsAfter.map((e) => e.id)
     expect(blogIds).not.toContain(toBeDeleted._id)
   })
+  test('should return 401 for unauthenticated user', async () => {
+    const blogsBefore = await blogsInDb()
+    const res = await api.delete(`/api/blogs/${toBeDeleted._id}`).expect(401)
+    expect(res.body.error).toContain('invalid token')
+    const blogsAfter = await blogsInDb()
+    expect(blogsAfter).toHaveLength(blogsBefore.length)
+    const blogIds = blogsAfter.map((e) => e.id)
+    expect(blogIds).toContain(toBeDeleted._id)
+  })
+  test('should return 403 for blog belonging to another user', async () => {
+    const blogsBefore = await blogsInDb()
+    const res = await api.delete(`/api/blogs/${listWithManyBlogs[1]._id}`).set('authorization', `Bearer ${token}`).expect(403)
+    expect(res.body.error).toContain('Blog does not belong to user')
+    const blogsAfter = await blogsInDb()
+    expect(blogsAfter).toHaveLength(blogsBefore.length)
+    const blogIds = blogsAfter.map((e) => e.id)
+    expect(blogIds).toContain(toBeDeleted._id)
+  })
   test('should return 400 for malformatted id', async () => {
-    await api.delete(`/api/blogs/${toBeDeleted._id}123`).expect(400)
+    await api.delete(`/api/blogs/${toBeDeleted._id}123`).set('authorization', `Bearer ${token}`).expect(400)
   })
   test('should return 404 if blog not found', async () => {
-    await api.delete(`/api/blogs/00${toBeDeleted._id.substring(2)}`)
+    await api.delete(`/api/blogs/00${toBeDeleted._id.substring(2)}`).set('authorization', `Bearer ${token}`).expect(404)
   })
 })
 
 describe('updating of a blog', () => {
   const toBeUpdated = listWithManyBlogs[0]
-  test('should delete existing blog', async () => {
+  test('should update existing blog', async () => {
     const res = await api.put(`/api/blogs/${toBeUpdated._id}`).send({ likes: 12 }).expect(200)
     expect(res.body.likes).toBe(12)
   })
   test('should return 400 for malformatted id', async () => {
-    await api.delete(`/api/blogs/${toBeUpdated._id}123`).expect(400)
+    await api.put(`/api/blogs/${toBeUpdated._id}123`).expect(400)
   })
   test('should return 404 if blog not found', async () => {
-    await api.delete(`/api/blogs/00${toBeUpdated._id.substring(2)}`)
+    await api.put(`/api/blogs/00${toBeUpdated._id.substring(2)}`).expect(404)
   })
 })
 

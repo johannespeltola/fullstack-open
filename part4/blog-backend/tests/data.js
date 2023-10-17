@@ -16,7 +16,8 @@ const listWithManyBlogs = [
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
-    __v: 0
+    __v: 0,
+    user: '652e3f12dcd19b289f78a0bd'
   },
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -24,7 +25,8 @@ const listWithManyBlogs = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
     likes: 5,
-    __v: 0
+    __v: 0,
+    user: '652e3f12dcd19b289f78b1ce'
   },
   {
     _id: '5a422b3a1b54a676234d17f9',
