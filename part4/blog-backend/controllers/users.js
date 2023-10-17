@@ -6,7 +6,12 @@ const AppError = require('../utils/error')
 
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await User.find())
+    res.json(await User.find().populate('blogs', {
+      title: 1,
+      author: 1,
+      url: 1,
+      likes: 1
+    }))
   } catch (error) {
     next(error)
   }
