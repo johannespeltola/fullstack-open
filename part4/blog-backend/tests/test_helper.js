@@ -1,5 +1,7 @@
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const { JWT_SECRET } = require('../utils/config')
 
 const nonExistingId = async () => {
   const blog = new Blog({ author: Math.random().toString(16) })
@@ -19,8 +21,13 @@ const usersInDb = async () => {
   return users.map(u => u.toJSON())
 }
 
+const generateAuthTokenForUser = (user) => {
+  return jwt.sign(user, JWT_SECRET, { expiresIn: 60 * 60 })
+}
+
 module.exports = {
   nonExistingId,
   blogsInDb,
-  usersInDb
+  usersInDb,
+  generateAuthTokenForUser
 }

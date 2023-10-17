@@ -2,10 +2,22 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const { listWithManyBlogs } = require('./data')
-const { blogsInDb } = require('./test_helper')
+const { blogsInDb, generateAuthTokenForUser } = require('./test_helper')
 
 const api = supertest(app)
+
+const userData = {
+  id: '652e3f12dcd19b289f78a0bd',
+  username: 'root'
+}
+
+beforeAll(async () => {
+  await User.deleteMany()
+  const user = new User({ ...userData, _id: userData.id, password: 'hash' })
+  await user.save()
+}, 30000)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -27,7 +39,7 @@ test('blogs are have id property defined', async () => {
   res.body.forEach((e) => expect(e.id).toBeDefined())
 })
 
-test('blog is successfully created', async () => {
+test('blog creation fails if user is unauthenticated', async () => {
   const newBlog = {
     title: 'Interesting Blog Title',
     author: 'John Doe',
@@ -35,6 +47,22 @@ test('blog is successfully created', async () => {
   }
   const blogsBefore = await blogsInDb()
   const res = await api.post('/api/blogs').send(newBlog)
+  expect(res.status).toBe(401)
+  const blogsAfter = await blogsInDb()
+  expect(blogsAfter).toHaveLength(blogsBefore.length)
+  const blogIds = blogsAfter.map((e) => e.id)
+  expect(blogIds).not.toContain(res.body.id)
+})
+
+test('blog is successfully created', async () => {
+  const newBlog = {
+    title: 'Interesting Blog Title',
+    author: 'John Doe',
+    url: 'google.com'
+  }
+  const token = generateAuthTokenForUser(userData)
+  const blogsBefore = await blogsInDb()
+  const res = await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlog)
   expect(res.status).toBe(201)
   const blogsAfter = await blogsInDb()
   expect(blogsAfter).toHaveLength(blogsBefore.length + 1)
@@ -54,11 +82,13 @@ test('blog has default value 0 for likes', async () => {
     url: 'bing.com',
     likes: 10
   }
-  const withoutLikes = await api.post('/api/blogs').send(newBlogWithoutLikes)
+  const token = generateAuthTokenForUser(userData)
+
+  const withoutLikes = await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithoutLikes)
   expect(withoutLikes.status).toBe(201)
   expect(withoutLikes.body.likes).toBe(0)
 
-  const withLikes = await api.post('/api/blogs').send(newBlogWithLikes)
+  const withLikes = await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithLikes)
   expect(withLikes.status).toBe(201)
   expect(withLikes.body.likes).toBe(10)
 })
@@ -80,10 +110,12 @@ test('new blog requires properties title and url', async () => {
     author: 'John Doe',
     url: 'google.com'
   }
-  await api.post('/api/blogs').send(newBlogWithoutTitle).expect(400)
-  await api.post('/api/blogs').send(newBlogWithoutUrl).expect(400)
-  await api.post('/api/blogs').send(newBlogWithoutBoth).expect(400)
-  await api.post('/api/blogs').send(newBlogWithBoth).expect(201)
+  const token = generateAuthTokenForUser(userData)
+
+  await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithoutTitle).expect(400)
+  await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithoutUrl).expect(400)
+  await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithoutBoth).expect(400)
+  await api.post('/api/blogs').set('authorization', `Bearer ${token}`).send(newBlogWithBoth).expect(201)
 })
 
 describe('deletion of a blog', () => {

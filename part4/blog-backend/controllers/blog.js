@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
 const Blog = require('../models/blog')
-const User = require('../models/user')
+const { authHandler } = require('../utils/middleware')
 
 router.get('/', async (req, res, next) => {
   try {
@@ -14,20 +14,19 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', authHandler, async (req, res, next) => {
   try {
     const { title, author, url, likes } = req.body
-    const user = await User.findOne({})
     const newBlog = new Blog({
       title,
       author,
       url,
       likes,
-      user: user.id
+      user: req.user.id
     })
     await newBlog.save()
-    user.blogs = user.blogs.concat(newBlog._id)
-    await user.save()
+    req.user.blogs = req.user.blogs.concat(newBlog._id)
+    await req.user.save()
     res.status(201).json(newBlog)
   } catch (error) {
     next(error)

@@ -41,7 +41,7 @@ const authHandler = async (req, res, next) => {
       throw new AppError(401, 'Token invalid')
     }
     const user = await User.findById(decodedToken.id)
-    req.user = user.toJSON()
+    req.user = user
     next()
   } catch (error) {
     next(error)
