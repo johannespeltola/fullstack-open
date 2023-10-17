@@ -15,9 +15,8 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const { username, name, password } = req.body
-    if (!username) throw new AppError(400, 'Missing required value username')
-    if (!name) throw new AppError(400, 'Missing required value name')
-    if (!password) throw new AppError(400, 'Missing required value password')
+    if (username?.length < 3) throw new AppError(400, 'Username needs to be at least 3 characters')
+    if (password?.length < 3) throw new AppError(400, 'Password needs to be at least 3 characters')
 
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)

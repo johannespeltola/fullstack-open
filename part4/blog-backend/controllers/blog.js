@@ -13,7 +13,6 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const { title, author, url, likes } = req.body
-    if (!title || !url) return res.sendStatus(400)
     const newPerson = new Blog({
       title,
       author,

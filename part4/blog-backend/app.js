@@ -28,7 +28,10 @@ app.use(morgan((tokens, req, res) => [
   tokens.status(req, res),
   tokens.res(req, res, 'content-length'), '-',
   tokens['response-time'](req, res), 'ms',
-  req.method === 'POST' ? JSON.stringify(req.body) : ''
+  // Log request body for POST requests, expect auth related
+  (req.method === 'POST' && !tokens.url(req, res).includes('/api/users'))
+    ? JSON.stringify(req.body)
+    : ''
 ].join(' ')
 ))
 
