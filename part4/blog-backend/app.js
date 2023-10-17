@@ -8,6 +8,7 @@ const { errorHandler } = require('./utils/middleware')
 const logger = require('./utils/logger')
 
 const blogRouter = require('./controllers/blog')
+const usersRouter = require('./controllers/users')
 
 const app = express()
 app.use(express.json())
@@ -34,6 +35,8 @@ app.use(morgan((tokens, req, res) => [
 app.use(express.static('dist'))
 
 app.use('/api/blogs', blogRouter)
+app.use('/api/users', usersRouter)
+
 app.use(errorHandler)
 
 module.exports = app
