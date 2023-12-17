@@ -98,5 +98,32 @@ describe('Blog app', () => {
       cy.contains('View').click()
       cy.contains('Remove').should('not.exist')
     })
+    it('Blogs should be ordered according to likes', () => {
+      const blog2 = {
+        title: 'Another Blog',
+        author: 'John Doe',
+        url: 'google.com'
+      }
+      // Create first blog
+      cy.contains('New Blog').click()
+      cy.get('[data-testid=title-input]').type(blog.title)
+      cy.get('[data-testid=author-input]').type(blog.author)
+      cy.get('[data-testid=url-input]').type(blog.url)
+      cy.get('[data-testid=create-blog-button]').click()
+      // Create second blog
+      cy.contains('New Blog').click()
+      cy.get('[data-testid=title-input]').type(blog2.title)
+      cy.get('[data-testid=author-input]').type(blog2.author)
+      cy.get('[data-testid=url-input]').type(blog2.url)
+      cy.get('[data-testid=create-blog-button]').click()
+      // Sanity check original order
+      cy.get('[data-testid=blog]').eq(0).should('contain', `${blog.title} ${blog.author}`)
+      cy.get('[data-testid=blog]').eq(1).should('contain', `${blog2.title} ${blog2.author}`)
+      // Vote for the second item in list
+      cy.get('[data-testid=blog]').eq(1).contains('View').click()
+      cy.contains('Like').click()
+      // Expect the voted for item to now be first
+      cy.get('[data-testid=blog]').eq(0).should('contain', `${blog2.title} ${blog2.author}`)
+    })
   })
 })

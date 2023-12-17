@@ -3,13 +3,16 @@ import { useState } from 'react'
 const Blog = ({ blog, likeBlog, removeBlog, canRemove }) => {
   const [visible, setVisible] = useState(false)
   return (
-    <div style={{
-      paddingTop: 10,
-      paddingLeft: 2,
-      border: 'solid',
-      borderWidth: 1,
-      marginBottom: 5
-    }}>
+    <div
+      data-testid="blog"
+      style={{
+        paddingTop: 10,
+        paddingLeft: 2,
+        border: 'solid',
+        borderWidth: 1,
+        marginBottom: 5
+      }}
+    >
       <div>
         {blog.title} {blog.author}
         <button onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'View'}</button>
