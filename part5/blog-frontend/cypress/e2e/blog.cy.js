@@ -79,5 +79,24 @@ describe('Blog app', () => {
         .and('have.css', 'color', 'rgb(0, 128, 0)')
       cy.contains(`${blog.title} ${blog.author}`).should('not.exist')
     })
+    it('Can only be removed by the correct user', () => {
+      // Create blog with default user
+      cy.contains('New Blog').click()
+      cy.get('[data-testid=title-input]').type(blog.title)
+      cy.get('[data-testid=author-input]').type(blog.author)
+      cy.get('[data-testid=url-input]').type(blog.url)
+      cy.get('[data-testid=create-blog-button]').click()
+      cy.contains('Logout').click()
+      // Create new temp user and login
+      cy.request('POST', 'http://localhost:3001/api/users/', { name: 'User2', username: 'user2', password: 'pass' })
+      cy.request('POST', 'http://localhost:3001/api/login',
+        { username: 'user2', password: 'pass' }
+      ).then((res) => {
+        localStorage.setItem('user', JSON.stringify(res.body))
+      })
+      cy.visit('http://localhost:5173')
+      cy.contains('View').click()
+      cy.contains('Remove').should('not.exist')
+    })
   })
 })
