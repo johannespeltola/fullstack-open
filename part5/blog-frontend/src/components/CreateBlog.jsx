@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
 import Togglable from './Togglable'
 
 const CreateBlog = forwardRef(({ submit }, refs) => {
@@ -27,21 +28,26 @@ const CreateBlog = forwardRef(({ submit }, refs) => {
       <form onSubmit={handleSubmit}>
         <div>
           Title:
-          <input type="text" value={title} name="Username" onChange={({ target }) => setTitle(target.value)} />
+          <input data-testid="title-input" type="text" value={title} name="Title" onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
           Author:
-          <input type="text" value={author} name="Password" onChange={({ target }) => setAuthor(target.value)} />
+          <input data-testid="author-input" type="text" value={author} name="Author" onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>
           URL:
-          <input type="text" value={url} name="Password" onChange={({ target }) => setUrl(target.value)} />
+          <input data-testid="url-input" type="text" value={url} name="URL" onChange={({ target }) => setUrl(target.value)} />
         </div>
-        <button type="submit">Create</button>
+        <button data-testid="create-blog-button" type="submit">Create</button>
       </form>
     </Togglable>
   )
 })
+
+
+CreateBlog.propTypes = {
+  submit: PropTypes.func.isRequired
+}
 
 CreateBlog.displayName = 'CreateBlog'
 
