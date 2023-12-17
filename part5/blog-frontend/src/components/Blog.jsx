@@ -10,11 +10,14 @@ const Blog = ({ blog }) => {
       borderWidth: 1,
       marginBottom: 5
     }}>
-      <p>{blog.title} <button onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'View'}</button></p>
+      <div>
+        {blog.title} {blog.author}
+        <button onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'View'}</button>
+      </div>
       {visible && <div>
         <p>{blog.url}</p>
         <p>Likes {blog.likes} <button>Like</button></p>
-        <p>{blog.author}</p>
+        <p>{blog.user.name}</p>
       </div>}
     </div>
   )
