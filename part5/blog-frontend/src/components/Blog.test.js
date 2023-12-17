@@ -47,3 +47,28 @@ test('url and likes shown when expanded', async () => {
   const likes = screen.getByText(`Likes ${blog.likes}`)
   expect(likes).toBeDefined()
 })
+
+test('like button works as expected', async () => {
+  const blog = {
+    title: 'Title',
+    author: 'Mr. Author',
+    url: 'google.com',
+    likes: 12,
+    user: '657f06d10cd7c31ce3e6d826'
+  }
+
+  const user = userEvent.setup()
+  const mockHandler = jest.fn()
+
+  render(<Blog blog={blog} likeBlog={mockHandler} />)
+
+  const expandButton = screen.getByText('View')
+
+  await user.click(expandButton)
+
+  const likeButton = screen.getByText('Like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
