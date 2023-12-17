@@ -23,6 +23,7 @@ const CreateBlog = forwardRef(({ submit }, refs) => {
 
   return (
     <Togglable ref={blogRef} buttonLabel='New Note'>
+      <h2>Create new</h2>
       <form onSubmit={handleSubmit}>
         <div>
           Title:

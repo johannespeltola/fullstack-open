@@ -75,11 +75,10 @@ const App = () => {
         <>
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
+          <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
-          <h2>Create new</h2>
-          <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
         </>
       )}
     </div>
