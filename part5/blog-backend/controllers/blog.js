@@ -51,18 +51,21 @@ router.delete('/:id', authHandler, async (req, res, next) => {
   }
 })
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', authHandler, async (req, res, next) => {
   try {
     const { title, author, url, likes, user } = req.body
-    const found = await Blog.findByIdAndUpdate(req.params.id, {
+    const blog = await Blog.findById(req.params.id)
+    if (!blog) throw new AppError(404, 'Blog not found')
+    const updated = await Blog.findByIdAndUpdate(req.params.id, {
       title,
       author,
       url,
       likes,
-      user: user?.id || user
+      // Instructions say nothing about this but probably stupid to let someone change the user value for a blog not belonging to them?
+      user: (blog.user._id.toString() === req.user.id) ? (user?.id || user) : blog.user
     }, { new: true, runValidators: true, context: 'query' })
-    if (!found) res.sendStatus(404)
-    res.json(await found.populate('user', {
+
+    res.json(await updated.populate('user', {
       username: 1,
       name: 1
     }))
