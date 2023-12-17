@@ -53,15 +53,19 @@ router.delete('/:id', authHandler, async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const { title, author, url, likes } = req.body
+    const { title, author, url, likes, user } = req.body
     const found = await Blog.findByIdAndUpdate(req.params.id, {
       title,
       author,
       url,
-      likes
+      likes,
+      user: user?.id || user
     }, { new: true, runValidators: true, context: 'query' })
     if (!found) res.sendStatus(404)
-    res.json(found)
+    res.json(await found.populate('user', {
+      username: 1,
+      name: 1
+    }))
   } catch (error) {
     next(error)
   }

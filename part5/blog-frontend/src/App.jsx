@@ -68,6 +68,17 @@ const App = () => {
     }
   }
 
+  const likeBlog = async (blog) => {
+    try {
+      const res = await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
+      const updatedBlogs = [...blogs]
+      updatedBlogs[blogs.findIndex((e) => e.id === blog.id)] = res
+      setBlogs(updatedBlogs)
+    } catch (error) {
+      notification('error', error.response.data.error)
+    }
+  }
+
   return (
     <div>
       <Notification message={errorMessage} severity={severity} />
@@ -77,7 +88,7 @@ const App = () => {
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
           <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} like={() => likeBlog(blog)} />
           )}
         </>
       )}
