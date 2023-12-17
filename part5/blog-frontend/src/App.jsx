@@ -97,7 +97,7 @@ const App = () => {
       {!user ? <Login handleLogin={handleLogin} ref={loginFormRef} /> : (
         <>
           <h2>blogs</h2>
-          <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
+          <p>{user.name} logged in <button id='logout-button' onClick={handleLogout}>Logout</button></p>
           <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
           {blogs.map(blog =>
             <Blog
