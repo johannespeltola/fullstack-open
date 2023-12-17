@@ -16,7 +16,7 @@ const Blog = ({ blog, likeBlog, removeBlog, canRemove }) => {
       </div>
       {visible && <div>
         <p>{blog.url}</p>
-        <p>Likes {blog.likes} <button onClick={likeBlog}>Like</button></p>
+        <p data-testid="blog-likes">Likes {blog.likes} <button onClick={likeBlog}>Like</button></p>
         <p>{blog.user.name}</p>
         {canRemove && <button onClick={removeBlog}>Remove</button>}
       </div>}
