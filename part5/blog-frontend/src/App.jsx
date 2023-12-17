@@ -22,7 +22,7 @@ const App = () => {
 
   const fetchBlogs = async () => {
     try {
-      setBlogs(await blogService.getAll())
+      setBlogs((await blogService.getAll()).sort((a, b) => a.likes < b.likes))
     } catch (error) {
       notification('error', 'Failed to retrieve blogs')
     }
@@ -73,7 +73,7 @@ const App = () => {
       const res = await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
       const updatedBlogs = [...blogs]
       updatedBlogs[blogs.findIndex((e) => e.id === blog.id)] = res
-      setBlogs(updatedBlogs)
+      setBlogs(updatedBlogs.sort((a, b) => a.likes < b.likes))
     } catch (error) {
       notification('error', error.response.data.error)
     }
