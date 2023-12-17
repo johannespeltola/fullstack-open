@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
-import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [severity, setSeverity] = useState('error')
-  const [createVisible, setCreateVisible] = useState(false)
+  const loginFormRef = useRef()
+  const createBlogRef = useRef()
 
   const notification = (severity, message) => {
     setSeverity(severity)
@@ -45,11 +45,10 @@ const App = () => {
       blogService.setToken(user.token)
       localStorage.setItem('user', JSON.stringify(user))
       notification('success', `Welcome back ${user.name}!`)
-      return true
+      loginFormRef.current.clearForm()
     } catch (error) {
       notification('error', error.response.data.error)
     }
-    return false
   }
 
   const handleLogout = async () => {
@@ -63,17 +62,16 @@ const App = () => {
       const blog = await blogService.create({ title, author, url })
       setBlogs([...blogs, blog])
       notification('success', `Added new blog ${title} by ${author}`)
-      return true
+      createBlogRef.current.clearForm()
     } catch (error) {
       notification('error', error.response.data.error)
     }
-    return false
   }
 
   return (
     <div>
       <Notification message={errorMessage} severity={severity} />
-      {!user ? <Login handleLogin={handleLogin} /> : (
+      {!user ? <Login handleLogin={handleLogin} ref={loginFormRef} /> : (
         <>
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
@@ -81,7 +79,7 @@ const App = () => {
             <Blog key={blog.id} blog={blog} />
           )}
           <h2>Create new</h2>
-          <CreateBlog submit={handleBlogSubmit} />
+          <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
         </>
       )}
     </div>

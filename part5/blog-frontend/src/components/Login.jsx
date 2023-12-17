@@ -1,16 +1,20 @@
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 
-const Login = ({ handleLogin }) => {
+const Login = forwardRef(({ handleLogin }, refs) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const login = async (event) => {
     event.preventDefault()
-    if (await handleLogin(username, password)) {
-      setUsername('')
-      setPassword('')
-    }
+    handleLogin(username, password)
   }
+
+  const clearForm = () => {
+    setUsername('')
+    setPassword('')
+  }
+
+  useImperativeHandle(refs, () => ({ clearForm }))
 
   return (
     <div>
@@ -28,6 +32,6 @@ const Login = ({ handleLogin }) => {
       </form>
     </div>
   );
-}
+})
 
 export default Login

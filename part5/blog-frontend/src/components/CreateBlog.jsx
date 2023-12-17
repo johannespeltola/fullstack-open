@@ -1,24 +1,28 @@
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import Togglable from './Togglable'
 
-const CreateBlog = ({ submit }) => {
+const CreateBlog = forwardRef(({ submit }, refs) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  const [visible, setVisible] = useState(false)
+  const blogRef = useRef()
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    if (await submit({ title, author, url })) {
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setVisible(false)
-    }
+    submit({ title, author, url })
   }
 
+  const clearForm = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    blogRef.current.toggleVisibility()
+  }
+
+  useImperativeHandle(refs, () => ({ clearForm }))
+
   return (
-    <Togglable visible={visible} setVisible={setVisible} buttonLabel='New Note'>
+    <Togglable ref={blogRef} buttonLabel='New Note'>
       <form onSubmit={handleSubmit}>
         <div>
           Title:
@@ -36,6 +40,6 @@ const CreateBlog = ({ submit }) => {
       </form>
     </Togglable>
   );
-}
+})
 
 export default CreateBlog
