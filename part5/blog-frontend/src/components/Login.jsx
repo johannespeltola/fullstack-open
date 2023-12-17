@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Login = forwardRef(({ handleLogin }, refs) => {
   const [username, setUsername] = useState('')
@@ -31,7 +32,13 @@ const Login = forwardRef(({ handleLogin }, refs) => {
         <button type="submit">Login</button>
       </form>
     </div>
-  );
+  )
 })
+
+Login.propTypes = {
+  handleLogin: PropTypes.func.isRequired
+}
+
+Login.displayName = 'Login'
 
 export default Login

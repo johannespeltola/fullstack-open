@@ -40,7 +40,9 @@ const CreateBlog = forwardRef(({ submit }, refs) => {
         <button type="submit">Create</button>
       </form>
     </Togglable>
-  );
+  )
 })
+
+CreateBlog.displayName = 'CreateBlog'
 
 export default CreateBlog
