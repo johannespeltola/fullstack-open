@@ -79,6 +79,18 @@ const App = () => {
     }
   }
 
+  const removeBlog = async ({ id, title, author }) => {
+    try {
+      if (confirm(`Remove ${title} by ${author}`)) {
+        await blogService.remove(id)
+        setBlogs([...blogs].filter((e) => e.id !== id))
+        notification('success', `Removed ${title} by ${author}`)
+      }
+    } catch (error) {
+      notification('error', error.response.data.error)
+    }
+  }
+
   return (
     <div>
       <Notification message={errorMessage} severity={severity} />
@@ -88,7 +100,13 @@ const App = () => {
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
           <CreateBlog submit={handleBlogSubmit} ref={createBlogRef} />
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} like={() => likeBlog(blog)} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              likeBlog={() => likeBlog(blog)}
+              removeBlog={() => removeBlog(blog)}
+              canRemove={blog.user.id === user.id}
+            />
           )}
         </>
       )}
