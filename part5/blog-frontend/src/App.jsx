@@ -5,12 +5,14 @@ import loginService from './services/login'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [severity, setSeverity] = useState('error')
+  const [createVisible, setCreateVisible] = useState(false)
 
   const notification = (severity, message) => {
     setSeverity(severity)

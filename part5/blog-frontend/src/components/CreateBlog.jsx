@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import Togglable from './Togglable'
 
 const CreateBlog = ({ submit }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [visible, setVisible] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -11,11 +13,12 @@ const CreateBlog = ({ submit }) => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      setVisible(false)
     }
   }
 
   return (
-    <div>
+    <Togglable visible={visible} setVisible={setVisible} buttonLabel='New Note'>
       <form onSubmit={handleSubmit}>
         <div>
           Title:
@@ -31,7 +34,7 @@ const CreateBlog = ({ submit }) => {
         </div>
         <button type="submit">Create</button>
       </form>
-    </div>
+    </Togglable>
   );
 }
 
