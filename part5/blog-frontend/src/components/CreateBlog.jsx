@@ -23,7 +23,7 @@ const CreateBlog = forwardRef(({ submit }, refs) => {
   useImperativeHandle(refs, () => ({ clearForm }))
 
   return (
-    <Togglable ref={blogRef} buttonLabel='New Note'>
+    <Togglable ref={blogRef} buttonLabel='New Blog'>
       <h2>Create new</h2>
       <form onSubmit={handleSubmit}>
         <div>
