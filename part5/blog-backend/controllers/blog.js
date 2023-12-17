@@ -28,7 +28,10 @@ router.post('/', authHandler, async (req, res, next) => {
     await newBlog.save()
     req.user.blogs = req.user.blogs.concat(newBlog._id)
     await req.user.save()
-    res.status(201).json(newBlog)
+    res.status(201).json(await newBlog.populate('user', {
+      username: 1,
+      name: 1
+    }))
   } catch (error) {
     next(error)
   }
