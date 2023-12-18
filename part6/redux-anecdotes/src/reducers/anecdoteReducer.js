@@ -9,21 +9,43 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
-const asObject = (anecdote) => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0
+const asObject = (anecdote) => ({
+  content: anecdote,
+  id: getId(),
+  votes: 0
+})
+
+const sortByVotes = (state) => state.sort((a, b) => a.votes < b.votes)
+
+const initialState = sortByVotes(anecdotesAtStart.map(asObject))
+
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'VOTE': {
+      const { id } = action.payload
+      const index = state.findIndex((e) => e.id === id)
+      const newState = [...state]
+      const oldValue = newState[index]
+      newState[index] = { ...oldValue, votes: oldValue.votes + 1 }
+      return sortByVotes(newState)
+    }
+    case 'CREATE': {
+      const { content } = action.payload
+      return sortByVotes(state.concat(asObject(content)))
+    }
+    default: return state
   }
 }
 
-const initialState = anecdotesAtStart.map(asObject)
+export const voteFor = (id) => ({
+  type: 'VOTE',
+  payload: { id }
+})
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
-
-  return state
-}
+export const createAnecdote = (content) => ({
+  type: 'CREATE',
+  payload: { content }
+})
 
 export default reducer
