@@ -32,18 +32,23 @@
     },
     {
       "content": "asd",
-      "votes": 0,
+      "votes": 1,
       "id": "X2zX2Y3"
     },
     {
       "content": "ds",
-      "votes": 0,
+      "votes": 1,
       "id": "gQT0mip"
     },
     {
       "content": "goran",
       "votes": 2,
       "id": "V9_NTm6"
+    },
+    {
+      "content": "asd",
+      "votes": 1,
+      "id": "BXE0DgO"
     }
   ]
 }
