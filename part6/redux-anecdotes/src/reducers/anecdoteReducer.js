@@ -20,7 +20,7 @@ const sortByVotes = (state) => state.sort((a, b) => a.votes < b.votes)
 const initialState = sortByVotes(anecdotesAtStart.map(asObject))
 
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'VOTE': {
       const { id } = action.payload
@@ -48,4 +48,4 @@ export const createAnecdote = (content) => ({
   payload: { content }
 })
 
-export default reducer
+export default anecdoteReducer
