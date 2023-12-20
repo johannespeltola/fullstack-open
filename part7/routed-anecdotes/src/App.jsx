@@ -76,10 +76,14 @@ const CreateNew = (props) => {
     })
   }
 
+  const reset = () => {
+    [content, author, info].forEach((i) => i.onReset())
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onReset={reset}>
         <div>
           content
           <input name='content' {...content} />
@@ -93,6 +97,7 @@ const CreateNew = (props) => {
           <input name='info' {...info} />
         </div>
         <button>create</button>
+        <button type='reset'>reset</button>
       </form>
     </div>
   )
